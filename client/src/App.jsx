@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ReactDOM from 'react-dom';
-import axios from 'axios';
 import Intro from './Intro.jsx';
 import char from './data.js';
 import Card from './card.jsx';
 import Des from './Des.jsx';
+import Chat from './chat.jsx';
+import Peer from 'peerjs';
+import openSocket from 'socket.io-client';
+const socket = openSocket('http://localhost:3000');
+
+
+
+// const myPeer = new Peer(undefined, {host: '/', port: '3001'});
 
 const App = () => {
   const [mode, setMode] = useState('intro');
@@ -13,6 +20,20 @@ const App = () => {
   const [text, setText] = useState([]);
   const [vote, setVote] = useState(false);
   const [reveal, setReveal] = useState(false);
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    socket.on('chat message', function(msg) {
+      let messages = document.getElementById('messages');
+      msg = window.location.search.replace(/.*username\=/, '') + ' : ' + msg;
+      console.log(msg)
+      var item = document.createElement('li');
+      item.textContent = msg;
+      console.log(item)
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  });
 
   let card = [];
   let centerCard = [];
@@ -83,10 +104,28 @@ const App = () => {
   };
 
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      messages.push(input.value);
+      setMessages(messages);
+      input.value = '';
+    }
+
+    socket.on('chat message', function(msg) {
+      var item = document.createElement('li');
+      item.textContent = msg;
+      console.log('test' + msg);
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  };
 
   return (
     <div>
       <h1>Welcome to Play One night found werewolf</h1>
+      <div id='callGrid'></div>
 
       {mode === 'intro' && <div>
         <h2>Choose a role you want to play:</h2>
@@ -144,7 +183,7 @@ const App = () => {
           </div>
         </div>
       </div>}
-
+      <Chat messages={messages} handleSubmit={handleSubmit}/>
     </div>
   );
 };
