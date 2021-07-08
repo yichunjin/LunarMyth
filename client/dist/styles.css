@@ -1,3 +1,129 @@
 body {
   text-align: center;
+  background-color: #222;
+  color: #fff;
+  font-family: 'Otomanopee One', sans-serif;
+}
+
+.container {
+  display: grid;
+}
+
+.intro {
+  margin-left: 2vw;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2vw;
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.game {
+  gap: 1vw;
+  grid-template-columns: 1fr 2fr;
+}
+
+.card {
+  width: 14vw;
+}
+
+.card:hover {
+  cursor: pointer;
+}
+
+.info-img {
+  width: 14vw;
+  height: auto;
+  margin-bottom: 2vh;
+}
+
+.description{
+  margin-left: 2vw;
+  text-align: left;
+  font-family: 'Zen Loop', cursive;
+  font-size: 2vw;
+}
+
+.button {
+  margin-top: 2vh;
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #354235;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 5px rgb(110, 110, 110);
+}
+
+.button:hover {background-color: #5d615d}
+
+.button:active {
+  background-color: #11192b;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+.desk img{
+  width: 8vw;
+  padding-left: 2vw;
+}
+
+.players {
+  /* margin-left: 2vw; */
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2vw;
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.desk {
+  border: 1px solid gray;
+  gap: 2vh;
+}
+
+.desk img:hover {
+  cursor: pointer;
+}
+
+.center {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2vw;
+  padding-left: 16vw;
+  padding-right: 16vw;
+}
+
+.content-box {
+  margin-left: 2vw;
+  padding: 2vw 2vw 2vw 2vw;
+  border: 1px solid gray;
+  /* width: 85.5vw; */
+  /* height: 20vw; */
+}
+
+p {
+  opacity: 0;
+  animation: fade-in 2s forwards;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.gameBtn {
+  margin-top: 5vh;
+  grid-template-columns:45vw 45vw;
+  width: 5vw;
+}
+
+.gameBtn button {
+  margin-bottom: 2vh;
 }
