@@ -3,10 +3,37 @@ body {
   background-color: #222;
   color: #fff;
   font-family: 'Otomanopee One', sans-serif;
+  font-size: 0.8vw;
 }
 
 .container {
   display: grid;
+}
+
+.title {
+  height: 6vh;
+  position: relative;
+}
+
+.logoImg {
+  top: 1%;
+  width: 3vw;
+  position: absolute;
+}
+
+.audio {
+  top: 20%;
+  position: absolute;
+  right: 1%;
+  width: 8vw;
+  height: 2vw;
+}
+
+.logoName {
+  font-family: 'Zen Loop', cursive;
+  font-size: 3vw;
+  position: absolute;
+  left: 4%;
 }
 
 .intro {
@@ -20,7 +47,7 @@ body {
 }
 
 .info {
-  height: 28vh;
+  height: 24vh;
 }
 
 .game {
@@ -79,7 +106,6 @@ body {
 }
 
 .players {
-  /* margin-left: 2vw; */
   grid-template-columns: repeat(5, 1fr);
   gap: 2vw;
   font-size: larger;
@@ -123,7 +149,7 @@ p {
 }
 
 .gameBtn {
-  margin-top: 5vh;
+  margin-top: 0.5vh;
   grid-template-columns:45vw 45vw;
   width: 5vw;
 }
@@ -139,7 +165,7 @@ p {
 #input:focus { outline: none; }
 
 .main__message_container button {
-  height: 3vh;
+  height: 4.7vh;
   background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
 
 #messages {

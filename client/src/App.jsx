@@ -4,7 +4,6 @@ import Intro from './Intro.jsx';
 import char from './data.js';
 import Card from './card.jsx';
 import Des from './Des.jsx';
-import Chat from './chat.jsx';
 import Room from './room.jsx';
 import Peer from 'peerjs';
 import openSocket from 'socket.io-client';
@@ -19,9 +18,12 @@ const App = () => {
   const [i, setI] = useState(null);
   const [players, setPlayers] = useState([]);
   const [text, setText] = useState([]);
+  const [restText, setRestText] = useState([]);
   const [vote, setVote] = useState(false);
   const [reveal, setReveal] = useState(false);
   const [messages, setMessages] = useState([]);
+  const [currentClick, setCurrentClick] = useState(-1);
+  const [resume, setResume] = useState(false);
 
   useEffect(() => {
     const videoGrid = document.getElementById('video-grid');
@@ -151,6 +153,7 @@ const App = () => {
           text.push(char[n].action);
         }
       }
+      text.push('!!! Time to find the werewolf !!!');
     }
     return text;
   };
@@ -180,6 +183,14 @@ const App = () => {
     }
   };
 
+  const handleContinue = () => {
+    players[currentClick].reveal = false;
+    setCurrentClick(-1);
+    let t = generateText(2);
+    setRestText(t);
+    setResume(true);
+  };
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -201,7 +212,13 @@ const App = () => {
 
   return (
     <div>
-      <h1>Welcome to Play One night found werewolf</h1>
+      <div className="title container">
+        <img className="logoImg" src="./img/moon.jpeg"></img><span className="logoName">Lunar Myth</span>
+        <h1>Welcome to Lunar Myth! Your mission is reveal the hiding werewolf!</h1>
+        <audio autoplay="autoplay" controls className="audio">
+          <source src="./music/werewolf-background.m4a" />
+        </audio>
+      </div>
       <div id='callGrid'></div>
 
       {mode === 'intro' && <div>
@@ -228,6 +245,7 @@ const App = () => {
           <div className='content-box'>
           Everyone, go to sleep
             {text.map((t, j) => <p key={j} style={{'animationDelay': j * 2000 + 'ms'}}>- {t}</p>)}
+            {resume && restText.map((t, j) => <p key={j} style={{'animationDelay': j * 2000 + 'ms'}}>- {t}</p>)}
           </div>
           <div className='desk container'>
             <div className='players container'>
@@ -237,6 +255,7 @@ const App = () => {
                 } else {
                   playGame(n[0]);
                 }
+                setCurrentClick(n[0]);
               }}>
                 <span>PLAYER {n[1]}</span>
                 {players[n[0]].reveal ? <img src={players[n[0]].img}></img>
@@ -255,7 +274,7 @@ const App = () => {
         </div>
         <div className='gameBtn container'>
           <div>
-            <button className='button' >Take Action</button>
+            <button className='button' onClick={(e) => handleContinue()}>Continue</button>
           </div>
           <div>
             <button className='button' onClick={(e) => setVote(true)}>Vote Werewolf</button>
@@ -264,7 +283,6 @@ const App = () => {
         </div>
       </div>}
       <Room />
-      {/* <Chat messages={messages} handleSubmit={handleSubmit}/> */}
     </div>
   );
 };
