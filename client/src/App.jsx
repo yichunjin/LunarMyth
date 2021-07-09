@@ -23,17 +23,6 @@ const App = () => {
   const [reveal, setReveal] = useState(false);
   const [messages, setMessages] = useState([]);
 
-  // useEffect(() => {
-  //   socket.on('chat message', function(msg) {
-  //     let messages = document.getElementById('messages');
-  //     msg = window.location.search.replace(/.*username\=/, '') + ' : ' + msg;
-  //     var item = document.createElement('li');
-  //     item.textContent = msg;
-  //     messages.appendChild(item);
-  //     window.scrollTo(0, document.body.scrollHeight);
-  //   });
-  // });
-
   useEffect(() => {
     const videoGrid = document.getElementById('video-grid');
     const myVideo = document.createElement('video');
@@ -67,10 +56,37 @@ const App = () => {
     peer.on('open', (id) => {
       socket.emit('join-room', roomId, id, user);
     });
+
+    let text = document.querySelector('#chat_message');
+    let send = document.getElementById('send');
+    let messages = document.querySelector('.messages');
+
+    send.addEventListener('click', (e) => {
+      if (text.value.length !== 0) {
+        socket.emit('message', text.value);
+        text.value = '';
+      }
+    });
+
+    text.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && text.value.length !== 0) {
+        socket.emit('message', text.value);
+        text.value = '';
+      }
+    });
+
+    socket.on('createMessage', (message, userName) => {
+      messages.innerHTML =
+        messages.innerHTML +
+        `<div class='message'>
+            <b><i class='far fa-user-circle'></i> <span> ${userName === user ? 'me' : userName}</span>
+            <span>: ${message}</span>
+        </div>`;
+    });
   }, []);
 
   useEffect(() => {
-    
+
   });
 
   const addVideoStream = (video, stream) => {
@@ -87,6 +103,9 @@ const App = () => {
     const video = document.createElement('video');
     call.on('stream', (userVideoStream) => {
       addVideoStream(video, userVideoStream);
+    });
+    call.on('close', () => {
+      video.remove();
     });
   };
 
