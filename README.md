@@ -9,4 +9,11 @@ An online real-time strategy role playing game application
 5. Start the server by running `npm start`
 6. Navigate to http://localhost:3000 in your browser.
 
+## References:
 
+- [React](https://reactjs.org/)
+- [Node](https://nodejs.org/en/)
+- [Express](https://expressjs.com/)
+- [PeerJS](https://peerjs.com/)
+- [Socket.io](https://socket.io/)
+- [Building a Video Chat App with Node.js + Socket.io + WebRTC](https://levelup.gitconnected.com/building-a-video-chat-app-with-node-js-socket-io-webrtc-26f46b213017)
