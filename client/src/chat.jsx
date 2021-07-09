@@ -7,7 +7,6 @@ const Chat = ({ messages, handleSubmit }) => {
       <form id="form" action="" onSubmit={(e) => handleSubmit(e)}>
         <input id="input" autoComplete="off" /><button>Send</button>
       </form>
-      <script>var socket = io();</script>
     </div>
   );
 };

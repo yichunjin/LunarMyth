@@ -1,1 +1,0 @@
-const Peer = require('peerjs');

@@ -5,13 +5,14 @@ import char from './data.js';
 import Card from './card.jsx';
 import Des from './Des.jsx';
 import Chat from './chat.jsx';
+import Room from './room.jsx';
 import Peer from 'peerjs';
 import openSocket from 'socket.io-client';
 const socket = openSocket('http://localhost:3000');
-
-
-
-// const myPeer = new Peer(undefined, {host: '/', port: '3001'});
+const peer = new Peer(undefined, {
+  host: '/',
+  port: '3001',
+});
 
 const App = () => {
   const [mode, setMode] = useState('intro');
@@ -22,18 +23,75 @@ const App = () => {
   const [reveal, setReveal] = useState(false);
   const [messages, setMessages] = useState([]);
 
+  // useEffect(() => {
+  //   socket.on('chat message', function(msg) {
+  //     let messages = document.getElementById('messages');
+  //     msg = window.location.search.replace(/.*username\=/, '') + ' : ' + msg;
+  //     var item = document.createElement('li');
+  //     item.textContent = msg;
+  //     messages.appendChild(item);
+  //     window.scrollTo(0, document.body.scrollHeight);
+  //   });
+  // });
+
   useEffect(() => {
-    socket.on('chat message', function(msg) {
-      let messages = document.getElementById('messages');
-      msg = window.location.search.replace(/.*username\=/, '') + ' : ' + msg;
-      console.log(msg)
-      var item = document.createElement('li');
-      item.textContent = msg;
-      console.log(item)
-      messages.appendChild(item);
-      window.scrollTo(0, document.body.scrollHeight);
+    const videoGrid = document.getElementById('video-grid');
+    const myVideo = document.createElement('video');
+    myVideo.muted = true;
+
+    const user = prompt('Enter your name');
+
+    let myVideoStream;
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: true,
+        video: true,
+      })
+      .then((stream) => {
+        myVideoStream = stream;
+        addVideoStream(myVideo, stream);
+
+        peer.on('call', (call) => {
+          call.answer(stream);
+          const video = document.createElement('video');
+          call.on('stream', (userVideoStream) => {
+            addVideoStream(video, userVideoStream);
+          });
+        });
+
+        socket.on('user-connected', (userId) => {
+          connectToNewUser(userId, stream);
+        });
+      });
+
+    peer.on('open', (id) => {
+      socket.emit('join-room', roomId, id, user);
     });
+  }, []);
+
+  useEffect(() => {
+    
   });
+
+  const addVideoStream = (video, stream) => {
+    const videoGrid = document.getElementById('video-grid');
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+      video.play();
+      videoGrid.append(video);
+    });
+  };
+
+  const connectToNewUser = (userId, stream) => {
+    const call = peer.call(userId, stream);
+    const video = document.createElement('video');
+    call.on('stream', (userVideoStream) => {
+      addVideoStream(video, userVideoStream);
+    });
+  };
+
+
+
 
   let card = [];
   let centerCard = [];
@@ -130,28 +188,31 @@ const App = () => {
       {mode === 'intro' && <div>
         <h2>Choose a role you want to play:</h2>
         <Intro char={char} setI={setI}/>
-        {i !== null && <div>
+
+        {i !== null ? <div className='info'>
           <Des info={char[i]}/>
-          <button className="button" onClick={
+          <button className='button' onClick={
             async (e) => {
               generateNPC();
               let t = generateText(1);
               await setText(t);
               setMode('game');
             }}>Choose {char[i].name}</button>
-        </div>}
+        </div>
+          : <div className='info'></div>}
+
       </div>}
 
       {mode === 'game' && <div>
         <h2>Game Start, watch carefully :</h2>
-        <div className="game container">
-          <div className="content-box">
+        <div className='game container'>
+          <div className='content-box'>
           Everyone, go to sleep
             {text.map((t, j) => <p key={j} style={{'animationDelay': j * 2000 + 'ms'}}>- {t}</p>)}
           </div>
-          <div className="desk container">
-            <div className="players container">
-              {[[0, 'A'], [1, 'B'], [2, 'C'], [3, 'D'], [4, 'E']].map((n) => <div key={n} className="npc container" onClick={(e) => {
+          <div className='desk container'>
+            <div className='players container'>
+              {[[0, 'A'], [1, 'B'], [2, 'C'], [3, 'D'], [4, 'E']].map((n) => <div key={n} className='npc container' onClick={(e) => {
                 if (vote) {
                   voteWerewolf(n[0]);
                 } else {
@@ -160,30 +221,31 @@ const App = () => {
               }}>
                 <span>PLAYER {n[1]}</span>
                 {players[n[0]].reveal ? <img src={players[n[0]].img}></img>
-                  : <img src="./img/cardBack.png"></img>}
+                  : <img src='./img/cardBack.png'></img>}
               </div>
               )}
             </div>
             <div>Center Cards: </div>
-            <div className="center container">
-              {[0, 1, 2].map((n) => <div key={n} className="centerCard">
-                <img src="./img/cardBack.png"></img>
+            <div className='center container'>
+              {[0, 1, 2].map((n) => <div key={n} className='centerCard'>
+                <img src='./img/cardBack.png'></img>
               </div>
               )}
             </div>
           </div>
         </div>
-        <div className="gameBtn container">
+        <div className='gameBtn container'>
           <div>
-            <button className="button" >Take Action</button>
+            <button className='button' >Take Action</button>
           </div>
           <div>
-            <button className="button" onClick={(e) => setVote(true)}>Vote Werewolf</button>
+            <button className='button' onClick={(e) => setVote(true)}>Vote Werewolf</button>
             {vote && <div>Please Choose One player!</div>}
           </div>
         </div>
       </div>}
-      <Chat messages={messages} handleSubmit={handleSubmit}/>
+      <Room />
+      {/* <Chat messages={messages} handleSubmit={handleSubmit}/> */}
     </div>
   );
 };
